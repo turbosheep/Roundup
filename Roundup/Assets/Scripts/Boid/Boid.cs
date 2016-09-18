@@ -4,7 +4,7 @@ using System.Collections;
 public class Boid : MonoBehaviour
 {
 
-	public float separation = 2.5f;
+	public float separation = 1f;
 	public float neighborRadius = 5.0f;
 
 	public float separationWeight = 1f;
@@ -118,7 +118,6 @@ public class Boid : MonoBehaviour
 				return steer;
 			}
 		}
-		Debug.Log("Separation 0");
 		return new Vector2();
 	}
 
@@ -145,7 +144,6 @@ public class Boid : MonoBehaviour
 				steer = Vector2.ClampMagnitude(steer, mForce);
 			return steer;
 		}
-		Debug.Log("Align 0");
 		return new Vector2();
 	}
 
@@ -168,7 +166,6 @@ public class Boid : MonoBehaviour
 			sum /= (float)count;
 			return Seek(sum);
 		}
-		Debug.Log("Cohesion 0");
 		return new Vector2();
 	}
 
