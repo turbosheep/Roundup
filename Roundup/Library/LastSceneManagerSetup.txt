@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/CameronTest.unity
+- path: Assets/Scenes/HannahTest.unity
   isLoaded: 1
   isActive: 1
