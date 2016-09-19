@@ -36,7 +36,7 @@ public class Boid : MonoBehaviour
 			flock();
 			velocity += acceleration;
 			velocity = Vector2.ClampMagnitude(velocity, mSpeed);
-			location += velocity;
+			location += velocity * Time.deltaTime;
 			acceleration = Vector2.zero;
 			this.gameObject.transform.position = location;
 		}
@@ -166,6 +166,18 @@ public class Boid : MonoBehaviour
 			sum /= (float)count;
 			return Seek(sum);
 		}
+		return new Vector2();
+	}
+
+	private Vector2 StayOnscreen()
+	{
+		Vector2 maxX = new Vector2(Camera.main.pixelWidth, 0f);
+		Vector2 maxY = new Vector2(0, Camera.main.pixelHeight);
+
+		if (Camera.main.ScreenToWorldPoint(maxX).x < (location + velocity).x)
+			;
+
+		
 		return new Vector2();
 	}
 
