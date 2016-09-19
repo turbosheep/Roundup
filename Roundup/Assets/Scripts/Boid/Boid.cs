@@ -10,6 +10,7 @@ public class Boid : MonoBehaviour
 	public float separationWeight = 1f;
 	public float alignmentWeight = 1f;
 	public float cohesionWeight = 1f;
+	public float edgeWeight = 1f;
 
 	private Vector2 location;
 	private Vector2 velocity;
@@ -19,6 +20,8 @@ public class Boid : MonoBehaviour
 
 	public float mForce = 1f;
 	public float mSpeed = 1f;
+
+	public float distanceFromEdge = 1f;
 
 	// Use this for initialization
 	void Start()
@@ -45,20 +48,23 @@ public class Boid : MonoBehaviour
 	private void flock()
 	{
 
-		//find the three components of the flock
+		//find the three components of the flock, plus the force to stay onscreen
 		Vector2 sep = Separate();
 		Vector2 ali = Align();
 		Vector2 coh = Cohesion();
+		//Vector2 edge = StayOnscreen();
 
 		//weight them
 		sep *= separationWeight;
 		ali *= alignmentWeight;
 		coh *= cohesionWeight;
+		//edge *= edgeWeight;
 
 		//apply to the boid
 		ApplyForce(sep);
 		ApplyForce(ali);
 		ApplyForce(coh);
+		//ApplyForce(edge);
 	}
 
 	public void ApplyForce(Vector2 force)
@@ -171,11 +177,29 @@ public class Boid : MonoBehaviour
 
 	private Vector2 StayOnscreen()
 	{
-		Vector2 maxX = new Vector2(Camera.main.pixelWidth, 0f);
-		Vector2 maxY = new Vector2(0, Camera.main.pixelHeight);
+		//get world vectors to the edge of the screen
+		Vector2 maxX = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, location.y));
+		Vector2 maxY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, Camera.main.pixelHeight));
+		Vector2 minX = Camera.main.ScreenToWorldPoint(new Vector2(0f, location.y));
+		Vector2 minY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, 0f));
 
-		if (Camera.main.ScreenToWorldPoint(maxX).x < (location + velocity).x)
-			;
+		if ((maxX - location).magnitude < distanceFromEdge) //if boids are within the distance to the edge, adjust force so they turn away from it
+		{
+			Debug.Log("Edge");
+		}
+		else if((maxY - location).magnitude < distanceFromEdge)
+		{
+			Debug.Log("Edge");
+		}
+		else if((minX - location).magnitude < distanceFromEdge)
+		{
+			Debug.Log("Edge");
+		}
+		else if((minY - location).magnitude < distanceFromEdge)
+		{
+			Debug.Log("Edge");
+		}
+			
 
 		
 		return new Vector2();
