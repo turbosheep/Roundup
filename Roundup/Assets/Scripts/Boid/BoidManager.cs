@@ -16,8 +16,8 @@ public class BoidManager : MonoBehaviour
 		for (int i = 0; i < numBoids; i++)
 		{
 			Vector2 pos = new Vector2(Random.Range(-10f, 10f), Random.Range(-5.0f, 5.0f));
-			//GameObject temp = Instantiate(boid, pos, Quaternion.identity, this.transform) as GameObject;
-			GameObject temp = Instantiate(boid, new Vector2(), Quaternion.identity, this.transform) as GameObject;
+			GameObject temp = Instantiate(boid, pos, Quaternion.identity, this.transform) as GameObject;
+			//GameObject temp = Instantiate(boid, new Vector2(), Quaternion.identity, this.transform) as GameObject;
 			Boid b = temp.GetComponent<Boid>();
 			flock[i] = b;
 		}

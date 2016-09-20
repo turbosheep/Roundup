@@ -83,15 +83,15 @@ public class Boid : MonoBehaviour
 	private Vector2 Seek(Vector2 target)
 	{
 		//get a vector to the desired location, capped for speed
-		Vector2 desired = location - target;
-		desired.Normalize();
-		if (desired.magnitude > mSpeed)
-			desired = Vector2.ClampMagnitude(desired, mSpeed);
+		Vector2 desired = target - location;
+		//desired.Normalize();
+		//if (desired.magnitude > mSpeed)
+		//	desired = Vector2.ClampMagnitude(desired, mSpeed);
 
 		//get the seering (desired location - velocity), capped for force
 		Vector2 steer = desired - velocity;
-		if (steer.magnitude > mForce)
-			steer = Vector2.ClampMagnitude(steer, mForce);
+		//if (steer.magnitude > mForce)
+		//	steer = Vector2.ClampMagnitude(steer, mForce);
 
 		//return the steering vector
 		return steer;
@@ -112,24 +112,24 @@ public class Boid : MonoBehaviour
 			float d = dist.magnitude;
 			if (d > 0 && d < separation)
 			{
-				dist.Normalize();
+				//dist.Normalize();
 				dist /= d;
 				steer += dist;
 				count++;
 			}
-			if (count > 0)
-			{
-				steer /= (float)count;
-			}
-			if (steer.magnitude > 0)
-			{
-				steer.Normalize();
-				steer *= mSpeed;
-				steer = steer - velocity;
-				if (steer.magnitude > mForce)
-					steer = Vector2.ClampMagnitude(steer, mForce);
-				return steer;
-			}
+		}
+		if (count > 0)
+		{
+			steer /= (float)count;
+		}
+		if (steer.magnitude > 0)
+		{
+			//steer.Normalize();
+			steer *= mSpeed;
+			steer = steer - velocity;
+			//if (steer.magnitude > mForce)
+			//	steer = Vector2.ClampMagnitude(steer, mForce);
+			return steer;
 		}
 		return new Vector2();
 	}
@@ -154,11 +154,11 @@ public class Boid : MonoBehaviour
 		if (count > 0)
 		{
 			sum /= (float)count;
-			sum = Vector2.ClampMagnitude(sum, mSpeed);
+			//sum = Vector2.ClampMagnitude(sum, mSpeed);
 
 			Vector2 steer = sum - velocity;
-			if (steer.magnitude > mForce)
-				steer = Vector2.ClampMagnitude(steer, mForce);
+			//if (steer.magnitude > mForce)
+			//	steer = Vector2.ClampMagnitude(steer, mForce);
 			return steer;
 		}
 		return new Vector2();
@@ -218,8 +218,6 @@ public class Boid : MonoBehaviour
 		{
 			Debug.Log("Edge");
 		}
-			
-
 		
 		return new Vector2();
 	}
