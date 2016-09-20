@@ -1,21 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Motion : MonoBehaviour
+public class DummyMotion : MonoBehaviour
 {
     public float speed = 3;
     protected Rect screenRect;
 
-	// Used for initialization
-	void Start ()
+    // Used for initialization
+    void Start()
     {
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
     }
-	
+
     //Moves obj away from the mouse
-	public void Repel(Transform obj)
+    public void Repel(Transform obj)
     {
-        if(screenRect.Contains(Input.mousePosition))
+        if (screenRect.Contains(Input.mousePosition))
         {
             Rotate(obj);
             obj.position -= obj.up * speed * Time.deltaTime;
