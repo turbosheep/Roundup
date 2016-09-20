@@ -26,7 +26,7 @@ public class Boid : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		velocity = new Vector2();
+		velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
 		acceleration = new Vector2();
 		location = this.gameObject.transform.position;
 	}
@@ -37,14 +37,17 @@ public class Boid : MonoBehaviour
 		if (boids != null)
 		{
 			flock();
-			velocity += acceleration;
+			velocity = Vector2.Lerp(velocity, velocity + acceleration * Time.deltaTime, 1);
 			velocity = Vector2.ClampMagnitude(velocity, mSpeed);
-			location += velocity * Time.deltaTime;
+			location = Vector2.Lerp(location, location + velocity * Time.deltaTime, 1);
 			acceleration = Vector2.zero;
 			this.gameObject.transform.position = location;
 		}
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
 	private void flock()
 	{
 
@@ -94,6 +97,10 @@ public class Boid : MonoBehaviour
 		return steer;
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	private Vector2 Separate()
 	{
 		Vector2 steer = new Vector2();
@@ -127,6 +134,10 @@ public class Boid : MonoBehaviour
 		return new Vector2();
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	private Vector2 Align()
 	{
 		Vector2 sum = new Vector2();
@@ -153,6 +164,10 @@ public class Boid : MonoBehaviour
 		return new Vector2();
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	private Vector2 Cohesion()
 	{
 		Vector2 sum = new Vector2();
@@ -175,6 +190,10 @@ public class Boid : MonoBehaviour
 		return new Vector2();
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
 	private Vector2 StayOnscreen()
 	{
 		//get world vectors to the edge of the screen
