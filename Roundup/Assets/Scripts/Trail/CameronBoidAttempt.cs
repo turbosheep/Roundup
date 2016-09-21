@@ -86,10 +86,10 @@ public class CameronBoidAttempt : MonoBehaviour {
             }
             else
             {
-                Debug.Log("INSIDE");
+                //Debug.Log("INSIDE");
                 //transform.rotation = Vector3.ro
                 //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.position, Vector3.zero), Time.deltaTime);
-                //transform.position = Vector2.Lerp(transform.position, Vector2.up, 1 * Time.deltaTime);
+                transform.position = Vector2.Lerp(transform.position, Vector2.up, 1 * Time.deltaTime);
             }
         }
     }

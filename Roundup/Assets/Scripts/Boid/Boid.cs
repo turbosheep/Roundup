@@ -12,6 +12,10 @@ public class Boid : MonoBehaviour
 	public float cohesionWeight = 1f;
 	public float edgeWeight = 1f;
 
+    private bool isWrapping = false;  // Used in WrapAround()
+    private bool iwx = false;  // Used in StayOnScreen()
+    private bool iwy = false;  // Used in StayOnScreen()
+
 	private Vector2 location;
 	private Vector2 velocity;
 	private Vector2 acceleration;
@@ -38,8 +42,10 @@ public class Boid : MonoBehaviour
 		{
 			flock();
 			velocity = Vector2.Lerp(velocity, velocity + acceleration * Time.deltaTime, 1);
+            //velocity = StayOnscreen();  Tries to turn boids near edge around, not working 100 percent of the time.
 			velocity = Vector2.ClampMagnitude(velocity, mSpeed);
 			location = Vector2.Lerp(location, location + velocity * Time.deltaTime, 1);
+            location *= WrapAround();      //WRAPS the boid in astroids type manner.
 			acceleration = Vector2.zero;
 			this.gameObject.transform.position = location;
 		}
@@ -190,36 +196,99 @@ public class Boid : MonoBehaviour
 		return new Vector2();
 	}
 
+
+
+    private float WrapAround()
+    {
+        Renderer r = GetComponent<Renderer>(); // Should eventually move this as class global for efficiency.
+        if (r.isVisible)
+        {
+            isWrapping = false;
+            return 1;
+        }
+
+        if (!isWrapping)
+        {
+            isWrapping = true;
+            return -1f;
+        }
+
+        return 1;
+    }
+
 	/// <summary>
 	/// 
 	/// </summary>
 	/// <returns></returns>
 	private Vector2 StayOnscreen()
 	{
-		//get world vectors to the edge of the screen
-		Vector2 maxX = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, location.y));
-		Vector2 maxY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, Camera.main.pixelHeight));
-		Vector2 minX = Camera.main.ScreenToWorldPoint(new Vector2(0f, location.y));
-		Vector2 minY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, 0f));
+        Vector2 newV = velocity;
+        Vector3 edge = Camera.main.WorldToViewportPoint(transform.position);
 
-		if ((maxX - location).magnitude < distanceFromEdge) //if boids are within the distance to the edge, adjust force so they turn away from it
-		{
-			Debug.Log("Edge");
-		}
-		else if((maxY - location).magnitude < distanceFromEdge)
-		{
-			Debug.Log("Edge");
-		}
-		else if((minX - location).magnitude < distanceFromEdge)
-		{
-			Debug.Log("Edge");
-		}
-		else if((minY - location).magnitude < distanceFromEdge)
-		{
-			Debug.Log("Edge");
-		}
-		
-		return new Vector2();
-	}
+        if (!iwx)
+        {
+            if (edge.x < 0.1f)
+            {
+                newV.x = 1;
+                iwx = true;
+            }
+            else if (edge.x > 0.9f)
+            {
+                newV.x = -1;
+                iwx = true;
+            }
+        }
+
+        if (!iwy)
+        {
+            if (edge.y < 0.1f)
+            {
+                newV.y = 1;
+                iwy = true;
+            }
+            else if (edge.y > 0.9f)
+            {
+                newV.y = -1;
+                iwy = true;
+            }
+        }
+
+        if (edge.x > 0.2f && edge.x < 0.8f)
+        {
+            iwx = false;
+        }
+
+        if (edge.y > 0.2f && edge.y < 0.8f)
+        {
+            iwy = false;
+        }
+
+        return newV;
+
+        //get world vectors to the edge of the screen
+        ////Vector2 maxX = Camera.main.ScreenToWorldPoint(new Vector2(Camera.main.pixelWidth, location.y));
+        ////Vector2 maxY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, Camera.main.pixelHeight));
+        ////Vector2 minX = Camera.main.ScreenToWorldPoint(new Vector2(0f, location.y));
+        ////Vector2 minY = Camera.main.ScreenToWorldPoint(new Vector2(location.x, 0f));
+
+        ////if ((maxX - location).magnitude < distanceFromEdge) //if boids are within the distance to the edge, adjust force so they turn away from it
+        ////{
+        ////    Debug.Log("Edge");
+        ////}
+        ////else if ((maxY - location).magnitude < distanceFromEdge)
+        ////{
+        ////    Debug.Log("Edge");
+        ////}
+        ////else if ((minX - location).magnitude < distanceFromEdge)
+        ////{
+        ////    Debug.Log("Edge");
+        ////}
+        ////else if ((minY - location).magnitude < distanceFromEdge)
+        ////{
+        ////    Debug.Log("Edge");
+        ////}
+
+        ////return new Vector2();
+    }
 
 }
