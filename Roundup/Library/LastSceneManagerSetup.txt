@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/Brady Boid Test.unity
-  isLoaded: 1
-  isActive: 1
