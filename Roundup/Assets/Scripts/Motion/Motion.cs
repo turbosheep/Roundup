@@ -8,63 +8,30 @@ public class Motion : MonoBehaviour
 
     public float movementSpeed = 3;     //How quickly the object moves
     public float rotationSpeed = 3;     //How quickly the object rotates to face direction
-    public float smallRadius = 2;       //Personal space radius
-    public float largeRadius = 20;      //Attractive radius
-    public float edgeBoarder = 10;      //Amount of space away from the edge of screen that stops movement
+    public float sightRadius = 3;       //How close the mouse can get before it flees.
 
     protected Rect screenRect;
-    protected Rect playRect;
     protected Transform marker;
-    protected bool fleeing;
-    protected GameObject[] boidList;
 
 	// Used for initialization
 	void Start ()
     {
-        tag = "Boid";
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
-        playRect = new Rect(edgeBoarder, edgeBoarder, Screen.width - (2 * edgeBoarder), Screen.height - (2 * edgeBoarder));
         marker = transform.GetChild(0);
     }
 
-    void Awake ()
-    {
-        //Get the boidList but remove yourself from the list
-        GameObject[] list = GameObject.FindGameObjectsWithTag("Boid");
-        boidList = new GameObject[list.Length - 1];
-        int index = 0;
-        for(int i = 0; i < list.Length; i++)
-        {
-            Debug.Log("for loop");
-            if (boidList[i] != this)
-            {
-                Debug.Log("expand");
-                boidList[index] = list[i];
-                index++;
-            }
-        }
-        Debug.Log(boidList.Length);
-    }
-
     // Main AI logic
-    void Update ()
-    {
+    public void DoRepel ()
+    {   
         Vector3 mousePos = GetMousePos();
         if(screenRect.Contains(Input.mousePosition))
         {
-            if(Input.GetMouseButton(0))
-            {
-                Attract(mousePos);
-            }
-            else
-            {
-                Repel(mousePos);
-            }
+            Repel(mousePos);
         }
     }
 
     //Gets the mouse position
-    protected Vector3 GetMousePos()
+    public Vector3 GetMousePos()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos = new Vector3(mousePos.x, mousePos.y, 0);
@@ -88,7 +55,7 @@ public class Motion : MonoBehaviour
     }
 
     //Rotates the marker to the Vector3 pos
-    protected void RotateMarker(Vector3 pos)
+    public void RotateMarker(Vector3 pos)
     {
         Vector3 diff = pos - transform.position;
         diff.Normalize();
@@ -97,12 +64,23 @@ public class Motion : MonoBehaviour
     }
 
     //Rotates the transform to the Vector3 pos
-    protected void RotateObject(Vector3 pos)
+    public void RotateObject(Vector3 pos)
     {
         Vector3 diff = pos - transform.position;
         diff.Normalize();
         float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
         Quaternion finish = Quaternion.Euler(0f, 0f, rot_z - 90);
         transform.rotation = Quaternion.Slerp(transform.rotation, finish, rotationSpeed * Time.deltaTime);
+    }
+
+    //Gets the screen rect
+    public Rect GetRect()
+    {
+        return screenRect;
+    }
+
+    public Transform GetMarker()
+    {
+        return marker;
     }
 }
