@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Boid : MonoBehaviour
 {
-
 	public float separation = 1f;
 	public float neighborRadius = 5.0f;
 
@@ -12,9 +11,13 @@ public class Boid : MonoBehaviour
 	public float cohesionWeight = 1f;
 	public float edgeWeight = 1f;
 
+    public float startRepelRange = 1f;
     private bool isWrapping = false;  // Used in WrapAround()
     private bool iwx = false;  // Used in StayOnScreen()
     private bool iwy = false;  // Used in StayOnScreen()
+    private Vector2 threatDir;
+    private GameObject threat;
+    private Transform skin;
 
 	private Vector2 location;
 	private Vector2 velocity;
@@ -33,20 +36,62 @@ public class Boid : MonoBehaviour
 		velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
 		acceleration = new Vector2();
 		location = this.gameObject.transform.position;
+        threatDir = Vector2.zero;
+        skin = transform.FindChild("Skin");
+        skin.rotation = Quaternion.FromToRotation(skin.position, velocity);
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
-		if (boids != null)
+        if (boids != null)
 		{
-			flock();
-			velocity = Vector2.Lerp(velocity, velocity + acceleration * Time.deltaTime, 1);
-            //velocity = StayOnscreen();  Tries to turn boids near edge around, not working 100 percent of the time.
-			velocity = Vector2.ClampMagnitude(velocity, mSpeed);
-			location = Vector2.Lerp(location, location + velocity * Time.deltaTime, 1);
+            threat = GameObject.FindGameObjectWithTag("Dog");
+            if (threat)
+            {
+                float dist = Vector2.Distance(transform.position, threat.transform.position);
+
+                if (startRepelRange - dist > 0)
+                {
+                    float FearFactor = startRepelRange/Mathf.Max(0.1f, (startRepelRange - dist)*2f);
+                    float speed = 0.5f;
+                    threatDir = (transform.position - threat.transform.position).normalized * (speed * FearFactor);
+                    velocity += threatDir;
+
+                    //float speed = 10f;
+                    //threatDir = (transform.position - threat.transform.position).normalized  * speed;
+                    //velocity += threatDir;
+
+                }
+            }
+
+
+            flock();
+            velocity = Vector2.Lerp(velocity, velocity + acceleration * Time.deltaTime, 1);
+            velocity = Vector2.ClampMagnitude(velocity, mSpeed);
+            location = Vector2.Lerp(location, location + velocity * Time.deltaTime, 1);
             location *= WrapAround();      //WRAPS the boid in astroids type manner.
-			acceleration = Vector2.zero;
+
+
+            float rot = Mathf.Atan2(velocity.normalized.y, velocity.normalized.x) * Mathf.Rad2Deg;
+            Quaternion finish = Quaternion.Euler(0f, 0f, rot-180);
+
+            if(threat)
+                skin.rotation = Quaternion.Slerp(skin.rotation, finish, Time.deltaTime*5f);
+            else
+                skin.rotation = Quaternion.Slerp(skin.rotation, finish, Time.deltaTime);
+
+
+            //if (Mathf.Abs(skin.rotation.eulerAngles.z) > 90f)
+            //{
+            //    skin.GetComponent<SpriteRenderer>().flipY = true;
+            //}
+            //else
+            //{
+            //    skin.GetComponent<SpriteRenderer>().flipY = false;
+            //}
+
+            acceleration = Vector2.zero;
 			this.gameObject.transform.position = location;
 		}
 	}
@@ -200,7 +245,7 @@ public class Boid : MonoBehaviour
 
     private float WrapAround()
     {
-        Renderer r = GetComponent<Renderer>(); // Should eventually move this as class global for efficiency.
+        Renderer r = skin.GetComponent<Renderer>(); // Should eventually move this as class global for efficiency.
         if (r.isVisible)
         {
             isWrapping = false;
