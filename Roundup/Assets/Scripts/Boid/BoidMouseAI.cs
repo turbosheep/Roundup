@@ -47,7 +47,7 @@ public class BoidMouseAI : MonoBehaviour
         {
             Vector3 mousePos = _motion.GetMousePos();
             float distance = Vector3.Distance(transform.position, mousePos);
-            if(distance > _motion.sightRadius || !_motion.GetRect().Contains(Input.mousePosition))
+            if(distance > _motion.sightRadius || !Input.GetMouseButton(0))
             {
                 flock();
                 velocity = Vector2.Lerp(velocity, velocity + acceleration * Time.deltaTime, 1);
