@@ -4,8 +4,13 @@ using System.Collections;
 public class DogTrail : MonoBehaviour {
 
     public float speed = 1;
-
     private Vector2[] path;
+
+    public void Move(Vector3 to)
+    {
+        to.z = 0;
+        transform.position = to;
+    }
 
     public void StartRun(Vector2[] p)
     {
