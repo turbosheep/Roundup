@@ -266,7 +266,12 @@ public class BoidMouseAI : MonoBehaviour
     void Flee(Vector3 pos)
     {
         _motion.RotateMarker(pos);
-        transform.position -= (_motion.GetMarker().up + new Vector3(velocity.x, velocity.y)) * _motion.movementSpeed * Time.deltaTime;
+        transform.position -= _motion.GetMarker().up * _motion.movementSpeed * Time.deltaTime;
+    }
+
+    public void UpdateLocation()
+    {
+        location = new Vector2(transform.position.x, transform.position.y);
     }
 
 }
