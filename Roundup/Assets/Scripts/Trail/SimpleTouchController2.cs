@@ -13,29 +13,25 @@ public class SimpleTouchController2 : MonoBehaviour {
     {
 
 #if UNITY_ANDROID
-        if (Input.touchCount > 0 && !frozen)
+        if (Input.touchCount > 0)
         {
             Touch myTouch = Input.GetTouch(0);
 
             if(myTouch.phase == TouchPhase.Began)
             {
-                Camera.main.backgroundColor = Color.red;
-                path = new List<Vector2>();
+                Vector2 path = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                inactiveDog = Instantiate(dog, path, Quaternion.identity) as GameObject;
             }
-            else if(myTouch.phase == TouchPhase.Moved)
+            else if(myTouch.phase == TouchPhase.Moved || MyTouch.phase == TouchPhase.Stationary)
             {
-                path.Add(myTouch.position);
+                 inactiveDog.SendMessage("Move", Camera.main.ScreenToWorldPoint(Input.mousePosition));
             }
             else if(myTouch.phase == TouchPhase.Ended)
             {
-                frozen = true;
-                Camera.main.backgroundColor = Color.blue;
-                GameObject.Instantiate(dog, new Vector3(path[0].x, path[0].y, 0), Quaternion.identity);
-                GameObject.Find("Dog").SendMessage("StartRun", path);
+                DogDoneRunning();
             }
         }
 #elif UNITY_EDITOR
-
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 path = Camera.main.ScreenToWorldPoint(Input.mousePosition);
